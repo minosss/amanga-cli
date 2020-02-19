@@ -1,7 +1,7 @@
 {
 	"name": "amanga-cli",
 	"description": "Manga Downloader",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"author": "mino",
 	"license": "MIT",
 	"repository": "minosss/amanga-cli",
