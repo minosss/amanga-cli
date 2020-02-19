@@ -13,6 +13,8 @@ process.on('unhandledRejection', reason => {
 	process.exit(1);
 });
 
+cli.version(`amanga-cli ${require('./package.json').version}`).usage('<command> [options]');
+
 cli.command('get <url>')
 	.description('download manga from site url.')
 	.option('-i, --info', 'Print extracted information')
@@ -43,9 +45,21 @@ cli.arguments('<command>').action(cmd => {
 	console.log();
 });
 
+cli.on('--help', () => {
+	console.log();
+	console.log(
+		`  Run ${chalk.cyan(`amanga <command> --help`)} for detailed usage of given command.`
+	);
+	console.log();
+});
+
 cli.commands.forEach(c => c.on('--help', () => console.log()));
 
 cli.parse(process.argv);
+
+if (!process.argv.slice(2).length) {
+	cli.outputHelp();
+}
 
 function camelize(str) {
 	return str.replace(/-(\w)/g, (_, c) => (c ? c.toUpperCase() : ''));
