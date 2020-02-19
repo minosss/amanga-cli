@@ -1,0 +1,35 @@
+{
+	"name": "amanga-cli",
+	"description": "Manga Downloader",
+	"version": "0.0.0",
+	"author": "mino",
+	"license": "MIT",
+	"repository": "minosss/amanga-cli",
+	"bin": {
+		"amanga": "index.js"
+	},
+	"keywords": [
+		"cli-app",
+		"cli",
+		"manga",
+		"downloader",
+		"amanga"
+	],
+	"dependencies": {
+		"amanga": "*",
+		"chalk": "^3.0.0",
+		"cli-progress": "^3.6.0",
+		"commander": "^4.1.1",
+		"download": "^7.1.0",
+		"fs-extra": "^8.1.0",
+		"progress": "^2.0.3",
+		"sharp": "^0.24.1"
+	},
+	"devDependencies": {
+		"@yme/prettier-config": "^0.1.0"
+	},
+	"prettier": "@yme/prettier-config",
+	"engines": {
+		"node": ">=10"
+	}
+}
