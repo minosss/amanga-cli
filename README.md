@@ -1,6 +1,6 @@
 # amanga-cli
 
-下漫画咯，用 [amanga](https://github.com/minosss/amanga) 解析，提供加载
+下漫画咯，用 [amanga](https://github.com/minosss/amanga) 解析，提供下载
 
 ## Install
 
