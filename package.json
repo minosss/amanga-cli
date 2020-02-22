@@ -18,11 +18,11 @@
 	"dependencies": {
 		"amanga": "*",
 		"chalk": "^3.0.0",
-		"cli-progress": "^3.6.0",
 		"commander": "^4.1.1",
 		"download": "^7.1.0",
 		"fs-extra": "^8.1.0",
-		"progress": "^2.0.3",
+		"ora": "^4.0.3",
+		"ow": "^0.16.0",
 		"sharp": "^0.24.1"
 	},
 	"devDependencies": {

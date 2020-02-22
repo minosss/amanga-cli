@@ -1,13 +1,9 @@
-const ProgressBar = require('progress');
+const ora = require('ora');
 const chalk = require('chalk');
 const sharp = require('sharp');
 const download = require('download');
 const path = require('path');
-const {pathExists, ensureDir, remove} = require('fs-extra');
-
-const supportedImageTypes = ['jpeg', 'png', 'webp', 'tiff'];
-
-exports.isSupportedExt = ext => supportedImageTypes.includes(ext);
+const {existsSync, ensureDirSync, removeSync} = require('fs-extra');
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -27,63 +23,66 @@ async function downloadUrls(manga, args) {
 			: images;
 
 	const dirName = path.join(outputDir, title);
-	await ensureDir(dirName);
+	ensureDirSync(dirName);
 
-	console.log();
-	console.log(`Downloading ${total} images of ${title} ...`);
-	console.log(
+	const spinner = ora();
+	spinner.info(`Downloading ${chalk.yellow(total)} images of ${chalk.yellow(title)} ...`);
+	spinner.info(
 		(force ? chalk.yellow('Force overwriting existing files') + ', And i' : 'I') +
 			'mage will convert to ' +
 			chalk.yellow(ext)
 	);
-	const bar = new ProgressBar('  ├:bar┤ :percent [:current/:total] ', {
-		total: total,
-		complete: '█',
-		incomplete: ' ',
-		width: 100,
-	});
 
 	const failImages = [];
+	let index = 0;
 	for (const image of finalImages) {
 		const {url, filename} = image;
 		const filePath = path.join(dirName, filename + '.' + ext);
 
-		if (!force && (await pathExists(filePath))) {
-			bar.tick();
+		spinner.prefixText = `[${++index}/${total}]`.padEnd(8, ' ');
+
+		if (!force && existsSync(filePath)) {
+			spinner.warn(`Exist ${filePath}, Skip`);
 			continue;
 		}
 
-		await download(url, undefined, {headers: {referer: sourceUrl}, timeout: 10000})
-			.then(data => {
-				return sharp(data)
-					[ext]()
-					.toFile(filePath);
-			})
-			.then(info => {
-				if (info.size > 0) {
-					bar.tick();
-				} else {
-					console.log(info);
-				}
-			})
-			.catch(async _error => {
-				await remove(filePath);
-				failImages.push(image);
+		spinner.start(`Downloading ${url}`);
+		try {
+			const data = await download(url, undefined, {
+				headers: {referer: sourceUrl},
+				timeout: 10000,
 			});
+			const info = await sharp(data)
+				[ext]()
+				.toFile(filePath);
+			spinner.succeed(`Saved to ${filePath} ${info.size}`);
+		} catch (error) {
+			spinner.fail(error.message);
+			removeSync(filePath);
+			failImages.push(image);
+		}
 	}
 
-	if (failImages.length && args.retry > 0) {
-		bar.terminate();
-		args.retry -= 1;
+	spinner.prefixText = '';
+	if (failImages.length) {
+		if (args.retry > 0) {
+			console.log();
+			spinner.warn('Retrying after 3s ...');
 
-		console.log();
-		console.log(chalk.yellow('Retrying after 3s'));
-		await delay(3000);
-		return downloadUrls({...manga, images: failImages}, {...args});
+			await delay(3000);
+			await downloadUrls({...manga, images: failImages}, {...args, retry: args.retry - 1});
+			return;
+		} else {
+			spinner.warn(
+				`${chalk.yellow(
+					failImages.length
+				)} images download failed, you can run amanga again or download by youself.`
+			);
+			console.log('    ' + failImages.map(image => image.url).join('\n    '));
+		}
 	}
 
-	console.log();
-	console.log('Download complete 🎉');
+	spinner.succeed('Done 🎉🎉');
 	return;
 }
 
