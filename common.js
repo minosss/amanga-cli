@@ -42,7 +42,7 @@ async function downloadUrls(manga, args) {
 		spinner.prefixText = `[${++index}/${total}]`.padEnd(8, ' ');
 
 		if (!force && existsSync(filePath)) {
-			spinner.warn(`Exist ${filePath}, Skip`);
+			spinner.warn(`Exist ${filePath}, skipped`);
 			continue;
 		}
 
