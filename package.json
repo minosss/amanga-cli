@@ -21,6 +21,7 @@
 		"commander": "^4.1.1",
 		"download": "^7.1.0",
 		"fs-extra": "^8.1.0",
+		"global-agent": "^2.1.12",
 		"ora": "^4.0.3",
 		"ow": "^0.16.0",
 		"sharp": "^0.24.1"

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
+require('global-agent/bootstrap');
 const cli = require('commander');
 const chalk = require('chalk');
 
